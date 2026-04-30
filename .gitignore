@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-worker/
+.observablehq/
+src/.observablehq/cache/
+.wrangler/
+.env
+.env.local
+.DS_Store
+*.log

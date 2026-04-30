@@ -1,0 +1,26 @@
+{
+  "name": "marginale-druk",
+  "version": "1.0.0",
+  "description": "Interactieve calculator voor de Nederlandse marginale druk (2026)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf src/.observablehq/cache",
+    "dev": "observable preview",
+    "build": "observable build",
+    "deploy": "wrangler deploy",
+    "deploy:dryrun": "wrangler deploy --dry-run --outdir dist-worker",
+    "observable": "observable"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.0",
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "wrangler": "^3.90.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

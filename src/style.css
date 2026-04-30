@@ -1,0 +1,72 @@
+/* Custom styling on top of Observable Framework's "air" theme. */
+
+.hero {
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0 2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #fff5e6 100%);
+  border: 1px solid var(--theme-foreground-faintest);
+}
+
+.hero p { margin: 0; font-size: 1.05rem; line-height: 1.5; }
+
+.card.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  min-height: 110px;
+}
+.card.stat h2 {
+  margin: 0 0 .25rem;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--theme-foreground-focus, #2d4dad);
+}
+.card.stat span {
+  color: var(--theme-foreground-muted);
+  font-size: .9rem;
+  line-height: 1.2;
+}
+
+.muted {
+  color: var(--theme-foreground-muted);
+  font-size: .9rem;
+}
+
+table.totals {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1rem;
+}
+table.totals th,
+table.totals td {
+  padding: .35rem .6rem;
+  border-bottom: 1px solid var(--theme-foreground-faintest);
+  text-align: left;
+}
+table.totals td {
+  text-align: right;
+  font-feature-settings: "tnum";
+}
+table.totals tr.emph {
+  font-weight: 600;
+  background: var(--theme-background-alt, #f7f9fc);
+}
+table.totals th.section {
+  background: var(--theme-background-alt, #f7f9fc);
+  font-size: .9rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--theme-foreground-muted);
+  padding-top: 1rem;
+  text-align: left;
+}
+
+@media (max-width: 700px) {
+  .grid.grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid.grid-cols-2 { grid-template-columns: 1fr; }
+}
