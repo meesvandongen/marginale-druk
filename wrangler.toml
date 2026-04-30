@@ -1,0 +1,11 @@
+name = "marginale-druk"
+compatibility_date = "2026-01-01"
+
+# Pure static site served via Cloudflare Workers static assets.
+# Observable Framework writes its build to ./dist; we serve that directly.
+
+[assets]
+directory = "./dist"
+# Observable Framework emits index.html, uitleg.html, parameters.html.
+# With cleanUrls, Cloudflare's default html_handling matches "/uitleg" → "uitleg.html".
+not_found_handling = "404-page"
