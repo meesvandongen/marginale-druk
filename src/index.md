@@ -59,11 +59,11 @@ const grootWerkgever = view(Inputs.toggle({label: "Grote werkgever (Aof-hoog)", 
 ```
 
 ```js
-const pensioenWerkgeverPct = view(Inputs.range([0, 0.30], {label: "Pensioenpremie werkgever (% over grondslag)", value: 0.16, step: 0.005, format: ".1%"}));
+const pensioenWerkgeverPct = view(Inputs.range([0, 0.30], {label: "Pensioenpremie werkgever (% over grondslag)", value: 0.16, step: 0.005, format: x => `${(x*100).toFixed(1)}%`}));
 ```
 
 ```js
-const pensioenWerknemerPct = view(Inputs.range([0, 0.15], {label: "Pensioenpremie werknemer (% over grondslag)", value: 0.06, step: 0.005, format: ".1%"}));
+const pensioenWerknemerPct = view(Inputs.range([0, 0.15], {label: "Pensioenpremie werknemer (% over grondslag)", value: 0.06, step: 0.005, format: x => `${(x*100).toFixed(1)}%`}));
 ```
 
 ```js
@@ -119,14 +119,14 @@ Plot.plot({
   height: 360,
   marginLeft: 60,
   x: {label: "Jaarbruto (€)", grid: true, tickFormat: d => `€${d/1000}k`},
-  y: {label: "Marginale druk", percent: true, grid: true, domain: [0, 120]},
+  y: {label: "Marginale druk", percent: true, grid: true, domain: [0, 1.2]},
   marks: [
     Plot.ruleY([0]),
-    Plot.ruleY([100], {stroke: "red", strokeDasharray: "4,4"}),
-    Plot.line(data, {x: "bruto", y: d => d.marginaal * 100, stroke: "steelblue", strokeWidth: 2.5}),
-    Plot.line(data, {x: "bruto", y: d => d.marginaalWg * 100, stroke: "darkorange", strokeWidth: 2}),
+    Plot.ruleY([1], {stroke: "red", strokeDasharray: "4,4"}),
+    Plot.line(data, {x: "bruto", y: "marginaal", stroke: "steelblue", strokeWidth: 2.5}),
+    Plot.line(data, {x: "bruto", y: "marginaalWg", stroke: "darkorange", strokeWidth: 2}),
     Plot.ruleX([bruto], {stroke: "red"}),
-    Plot.dot(data.filter(d => d.bruto === Math.round(bruto / 500) * 500), {x: "bruto", y: d => d.marginaal * 100, fill: "red", r: 5})
+    Plot.dot(data.filter(d => d.bruto === Math.round(bruto / 500) * 500), {x: "bruto", y: "marginaal", fill: "red", r: 5})
   ]
 })
 ```
@@ -161,8 +161,8 @@ Plot.plot({
   x: {label: "Aandeel van iedere extra €", percent: true, grid: true},
   color: {legend: false, domain: ["belasting", "korting", "toeslag", "netto"], range: ["#1f77b4", "#ff7f0e", "#d62728", "#2ca02c"]},
   marks: [
-    Plot.barX(breakdown, {x: d => d.pct * 100, y: "naam", fill: "type", sort: {y: "x", reverse: true}}),
-    Plot.text(breakdown, {x: d => d.pct * 100, y: "naam", text: d => `${(d.pct*100).toFixed(1)}%  (€${d.waarde.toFixed(0)})`, dx: 6, textAnchor: "start"}),
+    Plot.barX(breakdown, {x: "pct", y: "naam", fill: "type", sort: {y: "x", reverse: true}}),
+    Plot.text(breakdown, {x: "pct", y: "naam", text: d => `${(d.pct*100).toFixed(1)}%  (€${d.waarde.toFixed(0)})`, dx: 6, textAnchor: "start"}),
     Plot.ruleX([0])
   ]
 })
