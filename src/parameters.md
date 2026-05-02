@@ -1,39 +1,49 @@
 ---
-title: Gebruikte parameters 2026
+title: Parameters 2026
 ---
 
 # Parameters 2026
-
-Alle bedragen zoals gebruikt door deze calculator. Wijzigingen kun je doen in
-`src/lib/params.js`.
 
 ```js
 import {PARAMS_2026} from "./lib/params.js";
 ```
 
-## Box 1 — onder AOW-leeftijd
+<div class="hero">
+<p>Alle bedragen die deze calculator gebruikt. Wijzigingen kun je doen in <code>src/lib/params.js</code>; de hele calculator wordt automatisch herberekend.</p>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Box 1 — onder AOW-leeftijd</h3>
 
 ```js
 Inputs.table(PARAMS_2026.box1.underAOW.map((b, i, a) => ({
   schijf: i + 1,
   van: i === 0 ? 0 : a[i - 1].upTo,
-  totEnMet: b.upTo === Infinity ? "−" : b.upTo,
+  totEnMet: b.upTo === Infinity ? "—" : b.upTo,
   tarief: `${(b.rate * 100).toFixed(2)}%`
 })), {layout: "auto"})
 ```
 
-## Box 1 — vanaf AOW-leeftijd
+  </div>
+  <div class="card">
+    <h3>Box 1 — vanaf AOW-leeftijd</h3>
 
 ```js
 Inputs.table(PARAMS_2026.box1.overAOW.map((b, i, a) => ({
   schijf: i + 1,
   van: i === 0 ? 0 : a[i - 1].upTo,
-  totEnMet: b.upTo === Infinity ? "−" : b.upTo,
+  totEnMet: b.upTo === Infinity ? "—" : b.upTo,
   tarief: `${(b.rate * 100).toFixed(2)}%`
 })), {layout: "auto"})
 ```
 
-## Algemene heffingskorting
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Algemene heffingskorting</h3>
 
 ```js
 Inputs.table([
@@ -42,25 +52,37 @@ Inputs.table([
 ], {layout: "auto"})
 ```
 
-## Arbeidskorting — segmenten onder AOW
-
-```js
-Inputs.table(PARAMS_2026.arbeidskorting.underAOW, {layout: "auto"})
-```
-
-## Arbeidskorting — segmenten vanaf AOW
-
-```js
-Inputs.table(PARAMS_2026.arbeidskorting.overAOW, {layout: "auto"})
-```
-
-## IACK — Inkomensafhankelijke combinatiekorting
+  </div>
+  <div class="card">
+    <h3>IACK — Inkomensafhankelijke combinatiekorting</h3>
 
 ```js
 Inputs.table([PARAMS_2026.iack], {layout: "auto"})
 ```
 
-## Zorgtoeslag
+  </div>
+</div>
+
+<div class="card">
+  <h3>Arbeidskorting — segmenten onder AOW</h3>
+
+```js
+Inputs.table(PARAMS_2026.arbeidskorting.underAOW, {layout: "auto"})
+```
+
+</div>
+
+<div class="card">
+  <h3>Arbeidskorting — segmenten vanaf AOW</h3>
+
+```js
+Inputs.table(PARAMS_2026.arbeidskorting.overAOW, {layout: "auto"})
+```
+
+</div>
+
+<div class="card">
+  <h3>Zorgtoeslag</h3>
 
 ```js
 Inputs.table([{
@@ -76,7 +98,10 @@ Inputs.table([{
 }], {layout: "auto"})
 ```
 
-## Huurtoeslag (vereenvoudigd)
+</div>
+
+<div class="card">
+  <h3>Huurtoeslag (vereenvoudigd)</h3>
 
 ```js
 Inputs.table([{
@@ -92,13 +117,19 @@ Inputs.table([{
 }], {layout: "auto"})
 ```
 
-## Kindgebonden budget
+</div>
+
+<div class="card">
+  <h3>Kindgebonden budget</h3>
 
 ```js
 Inputs.table([PARAMS_2026.kindgebondenBudget], {layout: "auto"})
 ```
 
-## Werkgeverslasten
+</div>
+
+<div class="card">
+  <h3>Werkgeverslasten</h3>
 
 ```js
 Inputs.table(Object.entries(PARAMS_2026.werkgeverslasten).map(([k, v]) => ({
@@ -107,11 +138,16 @@ Inputs.table(Object.entries(PARAMS_2026.werkgeverslasten).map(([k, v]) => ({
 })), {layout: "auto"})
 ```
 
-## Bronnen
+</div>
 
-- [Belastingdienst: Box 1 tarieven 2026](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/boxen_en_tarieven/box_1/box_1)
-- [Belastingdienst: Tabel arbeidskorting 2026](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/arbeidskorting/tabel-arbeidskorting-2026)
-- [Belastingdienst: Berekening zorgtoeslag 2026](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/berekening-zorgtoeslag-2026)
-- [Volkshuisvesting Nederland: werking huurtoeslag](https://www.volkshuisvestingnederland.nl/onderwerpen/huren-en-wonen/huurtoeslag/werking-en-berekening-huurtoeslag)
-- [Belastingplan 2026 — overzicht](https://www.pwc.nl/nl/belastingplan/fiscale-maatregelen-2026.html)
-- [Werkgeverslasten 2026 (Van Oers)](https://www.vanoers.nl/nieuws/hr-solutions/werkgeverslasten-2026/)
+<div class="callout">
+  <strong>Bronnen.</strong>
+
+  <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/boxen_en_tarieven/box_1/box_1">Belastingdienst — Box 1 tarieven 2026</a> ·
+  <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/arbeidskorting/tabel-arbeidskorting-2026">Tabel arbeidskorting 2026</a> ·
+  <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/berekening-zorgtoeslag-2026">Berekening zorgtoeslag 2026</a> ·
+  <a href="https://www.volkshuisvestingnederland.nl/onderwerpen/huren-en-wonen/huurtoeslag/werking-en-berekening-huurtoeslag">Volkshuisvesting Nederland — werking huurtoeslag</a> ·
+  <a href="https://www.pwc.nl/nl/belastingplan/fiscale-maatregelen-2026.html">PwC — Belastingplan 2026</a> ·
+  <a href="https://www.vanoers.nl/nieuws/hr-solutions/werkgeverslasten-2026/">Werkgeverslasten 2026 (Van Oers)</a> ·
+  <a href="https://wb-nsc.nl/artikelen/onzichtbare-belasting-op-arbeid-wordt-ondraaglijk/">WB-NSC — Onzichtbare belasting op arbeid (april 2026)</a>
+</div>
