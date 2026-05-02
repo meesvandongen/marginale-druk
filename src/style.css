@@ -1,72 +1,157 @@
-/* Custom styling on top of Observable Framework's "air" theme. */
+/* Layered on top of Framework's "air" theme via the head: hook in
+   observablehq.config.js. Theme CSS loads first; this CSS extends it. */
 
+:root {
+  --md-radius: 12px;
+  --md-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 4px 12px rgba(15, 23, 42, .04);
+  --md-accent: #4338ca;
+  --md-accent-soft: rgba(67, 56, 202, .08);
+}
+
+/* ---------- Hero ---------- */
 .hero {
-  padding: 1.25rem 1.5rem;
-  margin: 1rem 0 2rem;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f0f7ff 0%, #fff5e6 100%);
+  margin: 1rem 0 1.75rem;
+  padding: 1.75rem 2rem;
+  border-radius: var(--md-radius);
+  background:
+    linear-gradient(135deg, rgba(67, 56, 202, .08) 0%, rgba(236, 72, 153, .08) 50%, rgba(249, 115, 22, .08) 100%);
   border: 1px solid var(--theme-foreground-faintest);
 }
+.hero h1 {
+  margin: 0 0 .5rem;
+  font-size: clamp(1.75rem, 3.6vw, 2.4rem);
+  line-height: 1.15;
+  font-weight: 600;
+}
+.hero p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--theme-foreground-muted);
+}
+.hero a { font-weight: 500; }
+.hero .tag {
+  display: inline-block;
+  padding: 1px 10px;
+  margin-left: .5rem;
+  border-radius: 999px;
+  font-size: .55em;
+  vertical-align: middle;
+  background: var(--md-accent);
+  color: white;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
 
-.hero p { margin: 0; font-size: 1.05rem; line-height: 1.5; }
-
-.card.stat {
+/* ---------- Cards ---------- */
+.card {
+  background: var(--theme-background);
+  border: 1px solid var(--theme-foreground-faintest);
+  border-radius: var(--md-radius);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--md-shadow);
+}
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -.005em;
+  margin: 0 0 .35rem;
+  color: var(--theme-foreground);
+}
+.card h3 {
+  font-size: .8rem;
+  font-weight: 600;
+  margin: 0 0 .85rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--theme-foreground-muted);
+}
+.card.big {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  text-align: center;
-  min-height: 110px;
+  gap: .15rem;
+  padding: 1rem 1.15rem 1.1rem;
 }
-.card.stat h2 {
-  margin: 0 0 .25rem;
-  font-size: 1.7rem;
+.card.big .value {
+  font-size: clamp(1.45rem, 2.6vw, 1.85rem);
   font-weight: 600;
-  color: var(--theme-foreground-focus, #2d4dad);
+  font-variant-numeric: tabular-nums;
+  color: var(--theme-foreground);
+  line-height: 1.1;
 }
-.card.stat span {
-  color: var(--theme-foreground-muted);
-  font-size: .9rem;
-  line-height: 1.2;
+.card.big .small {
+  font-size: .8rem;
+  line-height: 1.35;
 }
+.card.chart { padding: 1rem 1.1rem 1.2rem; }
+.card.chart > p { margin: 0 0 .8rem; max-width: 75ch; }
 
-.muted {
-  color: var(--theme-foreground-muted);
-  font-size: .9rem;
-}
+/* Tighten up Inputs inside cards */
+.card form[class*="oi-"] { margin: 0; padding: 0; }
+.card form[class*="oi-"] > label { font-size: .82rem; }
+.card form[class*="oi-"] + form[class*="oi-"] { margin-top: .35rem; }
 
-table.totals {
+/* ---------- Helpers ---------- */
+.muted   { color: var(--theme-foreground-muted); }
+.small   { font-size: .85rem; }
+
+/* ---------- Tables ---------- */
+table.kv {
   width: 100%;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
-  margin-top: 1rem;
+  font-size: .9rem;
 }
-table.totals th,
-table.totals td {
-  padding: .35rem .6rem;
+table.kv th,
+table.kv td {
+  padding: .35rem .25rem;
   border-bottom: 1px solid var(--theme-foreground-faintest);
   text-align: left;
 }
-table.totals td {
+table.kv td {
   text-align: right;
   font-feature-settings: "tnum";
 }
-table.totals tr.emph {
+table.kv tr.emph {
   font-weight: 600;
-  background: var(--theme-background-alt, #f7f9fc);
+  background: var(--md-accent-soft);
 }
-table.totals th.section {
-  background: var(--theme-background-alt, #f7f9fc);
-  font-size: .9rem;
+table.kv th.section {
+  background: transparent;
+  font-size: .72rem;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .07em;
   color: var(--theme-foreground-muted);
-  padding-top: 1rem;
-  text-align: left;
+  padding-top: .9rem;
+  border-bottom: 1px solid var(--theme-foreground-faintest);
+}
+table.kv td.neg { color: #16a34a; }
+
+/* ---------- Plot tweaks ---------- */
+figure { margin: 0; }
+figure svg { display: block; }
+figure[class*="plot-"] { background: transparent; }
+.plot-figure-legend, figcaption[class*="plot-"] {
+  font-size: .82rem !important;
+  color: var(--theme-foreground-muted);
 }
 
-@media (max-width: 700px) {
+/* ---------- Callout ---------- */
+.callout {
+  margin: 2rem 0 0;
+  padding: .9rem 1.1rem;
+  border-radius: var(--md-radius);
+  background: var(--theme-background-alt, rgba(15, 23, 42, .03));
+  border: 1px dashed var(--theme-foreground-faintest);
+  font-size: .87rem;
+  color: var(--theme-foreground-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
   .grid.grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid.grid-cols-3 { grid-template-columns: 1fr; }
   .grid.grid-cols-2 { grid-template-columns: 1fr; }
+  .hero { padding: 1.25rem; }
 }

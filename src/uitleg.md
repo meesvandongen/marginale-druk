@@ -1,25 +1,16 @@
 ---
-title: Hoe werkt marginale druk?
+title: Hoe het werkt
 ---
 
-# Hoe werkt marginale druk?
+# Hoe het werkt
 
-**Marginale druk** is het percentage van iedere extra verdiende euro dat je
-*niet* in je portemonnee houdt. Het is iets anders dan de gemiddelde belasting:
+<div class="hero">
+<p><strong>Marginale druk</strong> is het percentage van iedere extra verdiende euro dat je <em>niet</em> in je portemonnee houdt. Het is iets anders dan de gemiddelde belasting: marginale druk telt álles op wat er met de <em>volgende</em> euro gebeurt — meer belasting, minder heffingskorting, minder toeslagen. In bepaalde inkomenszones in Nederland kan deze druk boven de <strong>100%</strong> komen, waardoor een loonsverhoging je netto slechter af maakt.</p>
+</div>
 
-- **Gemiddelde druk** = totaal afgedragen / totaal verdiend.
-- **Marginale druk** = de som van álle verliezen op de *volgende* euro:
-  meer belasting, minder heffingskorting, minder toeslagen, etc.
-
-In Nederland kan de marginale druk in specifieke inkomensgebieden boven de
-**100%** uitkomen. Een loonsverhoging maakt je dan financieel slechter af. Dit
-heet het *armoedeval*-effect en ontstaat door de stapeling van afbouwen.
-
-## Wat zit er allemaal in?
-
-### 1. Inkomstenbelasting box 1
-
-Drie progressieve schijven (2026, onder AOW-leeftijd):
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Inkomstenbelasting box 1 (onder AOW)</h3>
 
 | Schijf | Tot       | Tarief  |
 |--------|-----------|---------|
@@ -27,73 +18,75 @@ Drie progressieve schijven (2026, onder AOW-leeftijd):
 | 2      | € 78.426  | 37,56%  |
 | 3      | hoger     | 49,50%  |
 
-In schijf 1 zit zowel inkomstenbelasting (8,10%) als premies volksverzekeringen
-(27,65% — AOW, Anw, Wlz). Boven de AOW-leeftijd betaal je geen AOW-premie meer
-en is schijf 1 dus 17,85%.
+<p class="muted small">Schijf 1 = 8,10% inkomstenbelasting + 27,65% premie volksverzekeringen (AOW, Anw, Wlz). Boven AOW-leeftijd: schijf 1 = 17,85%.</p>
+  </div>
+  <div class="card">
+    <h3>Heffingskortingen — directe kortingen op de te betalen belasting</h3>
 
-### 2. Heffingskortingen — directe kortingen op de te betalen belasting
+- **Algemene heffingskorting**: max € 3.115. Afbouw met **6,398%** boven € 29.736; nul op € 78.426.
+- **Arbeidskorting**: piecewise opbouw tot piek € 5.685 bij € 45.592, daarna afbouw **6,51%** per euro tot nul op € 132.920.
+- **IACK**: max € 3.032 (alleen met kind < 12). Bouwt op met **11,45%** vanaf arbeidsinkomen € 6.239 — een *verlagend* effect op de marginale druk.
+  </div>
+</div>
 
-- **Algemene heffingskorting**: maximaal € 3.115. Wordt afgebouwd met **6,398%**
-  voor elke euro inkomen boven € 29.736. Effectief verhoogt dit de marginale
-  druk over een breed inkomenstraject.
-- **Arbeidskorting**: opgebouwd in drie segmenten op arbeidsinkomen, piek van
-  € 5.685 bij ongeveer € 45.592, en daarna een afbouw van **6,51%** per euro
-  tot het op nul staat bij € 132.920.
-- **IACK** (inkomensafhankelijke combinatiekorting): maximaal € 3.032 als je
-  een kind onder de 12 hebt en arbeidsinkomen boven € 6.239. Bouwt op met
-  11,45% — een *verlagend* effect op de marginale druk in dat gebied.
-
-### 3. Toeslagen — afbouw bij oplopend inkomen
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Toeslagen — afbouw bij oplopend inkomen</h3>
 
 Elke afgebouwde toeslag voegt zijn afbouwpercentage toe aan de marginale druk.
 
-- **Zorgtoeslag**: bouwt af met **13,73%** boven € 29.736 (huishoudinkomen).
-- **Huurtoeslag**: bouwt af met **27%** (alleenstaand) of **22%** (met partner)
-  per euro huishoudinkomen boven het minimum.
+- **Zorgtoeslag**: afbouw **13,73%** boven € 29.736 (huishoudinkomen).
+- **Huurtoeslag**: afbouw **27%** alleenstaand / **22%** met partner per euro huishoudinkomen boven het minimum.
 - **Kindgebonden budget**: afbouw **7,60%** boven het toetsingsinkomen.
-- **Kinderopvangtoeslag**: vergoedingspercentage daalt op stapsgewijze
-  inkomensklassen — niet meegenomen in deze calculator omdat het sterk afhangt
-  van het aantal opvanguren per maand.
+  </div>
+  <div class="card">
+    <h3>Werkgeverszijde — wat de werkgever bovenop het loon kwijt is</h3>
 
-### 4. Werkgeverszijde — wat voegt het toe?
+- **WW**: 2,74% laag / 7,74% hoog
+- **Aof**: 6,27% klein / 7,63% groot
+- **Uniforme opslag kinderopvang**: 0,50%
+- **Werkhervattingskas (WHK)**: ~1,52%
+- **Werkgeversheffing Zvw**: 6,10%
+- **Vakantiegeld**: 8%
+- **Pensioenpremie werkgever**: 12–20% (varieert sterk per fonds)
 
-De *marginale druk op werkgeverskost* houdt rekening met het feit dat een
-loonsverhoging ook de **werkgeverslasten** laat stijgen, zolang het loon onder
-het maximumpremieloon (€ 79.409) blijft:
-
-- WW-premie (2,74% laag / 7,74% hoog)
-- Aof-premie (6,27% klein / 7,63% groot bedrijf)
-- Uniforme opslag kinderopvang (0,50%)
-- Werkhervattingskas WHK (gemiddeld 1,52%)
-- Werkgeversheffing Zvw (6,10%)
-- Vakantiegeld (8%)
-- Pensioenpremie werkgever (typisch 12–20% over grondslag boven franchise)
-
-Boven € 79.409 vallen WW, Aof, WHK en Zvw weg en stijgen alleen pensioen en
-vakantiegeld nog mee — de wig wordt iets smaller.
+<p class="muted small">Boven het maximumpremieloon van € 79.409 vallen WW, Aof, WHK en Zvw weg. Alleen pensioen en vakantiegeld stijgen daarna nog mee.</p>
+  </div>
+</div>
 
 ## Stapeling: de extreme zones
 
-| Inkomenszone (huishouden, alleenstaand)  | Belangrijkste effecten                                       | Typische marginale druk |
-|------------------------------------------|--------------------------------------------------------------|-------------------------|
-| € 0 – € 11.965                           | Box 1 schijf 1, opbouw arbeidskorting (−8,3%)               | ≈ 27%                  |
-| € 11.965 – € 25.845                      | Box 1, opbouw arbeidskorting (−31%)                          | < 10%                  |
-| € 25.845 – € 29.736                      | Box 1, lichte opbouw arbeidskorting                          | ≈ 35%                  |
-| € 29.736 – € 41.000                      | Box 1 + afbouw AHK + afbouw zorgtoeslag (+ huurtoeslag!)     | 60% – 100%+            |
-| € 45.592 – € 78.426                      | Box 1 schijf 2 + afbouw AHK + afbouw arbeidskorting         | ≈ 56%                  |
-| € 78.426 – € 132.920                     | Box 1 schijf 3 + afbouw arbeidskorting                       | ≈ 56%                  |
-| > € 132.920                              | Alleen schijf 3                                              | ≈ 49,5%                |
+Onderstaande tabel laat zien hoe de combinatie van afbouwen voor een alleenstaande zonder partner kan optellen tot extreme marginale-druk-percentages.
+
+<div class="card">
+
+| Inkomenszone (huishouden) | Belangrijkste effecten | Marginale druk |
+|---------------------------|------------------------|----------------|
+| € 0 – € 11.965            | Box 1 schijf 1, opbouw arbeidskorting (−8,3%) | ≈ 27% |
+| € 11.965 – € 25.845       | Opbouw arbeidskorting (−31%) overheerst | < 10% |
+| € 25.845 – € 29.736       | Lichte opbouw arbeidskorting | ≈ 35% |
+| € 29.736 – € 41.000       | Afbouw AHK + zorgtoeslag (+ huurtoeslag indien van toepassing) | 60% – 100%+ |
+| € 45.592 – € 78.426       | Schijf 2 + AHK-afbouw + arbeidskorting-afbouw | ≈ 56% |
+| € 78.426 – € 132.920      | Schijf 3 + arbeidskorting-afbouw | ≈ 56% |
+| > € 132.920               | Alleen schijf 3 | ≈ 49,5% |
+
+</div>
 
 ## Wat doet deze calculator wel/niet?
 
-Wel:
-- Box 1 inkomstenbelasting met heffingskortingen
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Wel</h3>
+
+- Box 1 inkomstenbelasting met heffingskortingen (AHK, AK, IACK)
 - Toeslagen: zorgtoeslag, huurtoeslag, kindgebonden budget
 - Werkgeverslasten incl. pensioen
-- IACK
 - Vergelijking AOW vs. niet-AOW
+- Marginale druk in beide richtingen: bruto en werkgeverskost
+  </div>
+  <div class="card">
+    <h3>Nog niet (zelf toe te voegen)</h3>
 
-Nog niet (zou je zelf kunnen toevoegen):
 - Box 2 (aanmerkelijk belang)
 - Box 3 (vermogen)
 - Hypotheekrenteaftrek / eigenwoningforfait
@@ -101,3 +94,12 @@ Nog niet (zou je zelf kunnen toevoegen):
 - Sectorpremies WHK / specifieke cao's
 - 30%-regeling voor expats
 - Studieleningterugbetaling (effectief +4% druk in afbouwzone)
+  </div>
+</div>
+
+## Bronnen
+
+Zie de pagina [Parameters](./parameters) voor alle exacte 2026-cijfers met
+verwijzingen naar de officiële publicaties van de Belastingdienst, het
+Ministerie van Financiën en het [WB-NSC-rapport over verborgen lasten op
+arbeid](https://wb-nsc.nl/artikelen/onzichtbare-belasting-op-arbeid-wordt-ondraaglijk/).
