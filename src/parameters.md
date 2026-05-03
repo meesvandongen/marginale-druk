@@ -123,9 +123,103 @@ Inputs.table([{
   <h3>Kindgebonden budget</h3>
 
 ```js
-Inputs.table([PARAMS_2026.kindgebondenBudget], {layout: "auto"})
+Inputs.table([{
+  perKindBasis:           PARAMS_2026.kindgebondenBudget.perKindBasis,
+  extra12_15:             PARAMS_2026.kindgebondenBudget.extra12_15,
+  extra16_17:             PARAMS_2026.kindgebondenBudget.extra16_17,
+  extraEersteKindAlleen:  PARAMS_2026.kindgebondenBudget.extraEersteKindAlleen,
+  aloKop:                 PARAMS_2026.kindgebondenBudget.aloKop,
+  drempel_alleen:         PARAMS_2026.kindgebondenBudget.drempel.alleen,
+  drempel_partner:        PARAMS_2026.kindgebondenBudget.drempel.partner,
+  afbouwPct: `${(PARAMS_2026.kindgebondenBudget.afbouwPct*100).toFixed(2)}%`
+}], {layout: "auto"})
 ```
 
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Studielening</h3>
+
+```js
+Inputs.table([{
+  drempel_alleen:  PARAMS_2026.studielening.drempel.alleen,
+  drempel_partner: PARAMS_2026.studielening.drempel.partner,
+  pct_SF2015: `${(PARAMS_2026.studielening.pctSF2015*100).toFixed(0)}%`,
+  pct_oud:    `${(PARAMS_2026.studielening.pctOud*100).toFixed(0)}%`
+}], {layout: "auto"})
+```
+
+  </div>
+  <div class="card">
+    <h3>30%-regeling</h3>
+
+```js
+Inputs.table([{
+  pct: `${(PARAMS_2026.expatRegeling.pct*100).toFixed(0)}%`,
+  plafondGrondslag: PARAMS_2026.expatRegeling.plafondGrondslag
+}], {layout: "auto"})
+```
+
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Kinderopvangtoeslag (lineaire benadering)</h3>
+
+```js
+Inputs.table([{
+  maxUurprijs_dagopvang: PARAMS_2026.kinderopvangtoeslag.maxUurprijsDagopvang,
+  maxUurprijs_BSO:       PARAMS_2026.kinderopvangtoeslag.maxUurprijsBSO,
+  maxUurprijs_gastouder: PARAMS_2026.kinderopvangtoeslag.maxUurprijsGastouder,
+  vergoeding_max: `${(PARAMS_2026.kinderopvangtoeslag.vergoedingMax*100).toFixed(0)}%`,
+  vergoeding_min: `${(PARAMS_2026.kinderopvangtoeslag.vergoedingMin*100).toFixed(0)}%`,
+  inkomenMin: PARAMS_2026.kinderopvangtoeslag.inkomenMin,
+  inkomenMax: PARAMS_2026.kinderopvangtoeslag.inkomenMax
+}], {layout: "auto"})
+```
+
+  </div>
+  <div class="card">
+    <h3>Eigen woning</h3>
+
+```js
+Inputs.table([{
+  ewfPct:           `${(PARAMS_2026.eigenWoning.ewfPct*100).toFixed(2)}%`,
+  maxAftrekTarief:  `${(PARAMS_2026.eigenWoning.maxAftrekTarief*100).toFixed(2)}%`
+}], {layout: "auto"})
+```
+
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Box 2 — aanmerkelijk belang (referentie)</h3>
+
+```js
+Inputs.table(PARAMS_2026.box2.schijven.map((b, i, a) => ({
+  schijf: i + 1,
+  van: i === 0 ? 0 : a[i - 1].upTo,
+  totEnMet: b.upTo === Infinity ? "—" : b.upTo,
+  tarief: `${(b.rate * 100).toFixed(1)}%`
+})), {layout: "auto"})
+```
+
+  </div>
+  <div class="card">
+    <h3>Box 3 — vermogen (referentie)</h3>
+
+```js
+Inputs.table([{
+  heffingsvrijVermogen: PARAMS_2026.box3.heffingsvrijVermogen,
+  forfaitairRendement: `${(PARAMS_2026.box3.forfaitairRendement*100).toFixed(2)}%`,
+  tarief: `${(PARAMS_2026.box3.tarief*100).toFixed(0)}%`
+}], {layout: "auto"})
+```
+
+  </div>
 </div>
 
 <div class="card">

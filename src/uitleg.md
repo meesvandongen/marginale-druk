@@ -76,24 +76,25 @@ Onderstaande tabel laat zien hoe de combinatie van afbouwen voor een alleenstaan
 
 <div class="grid grid-cols-2">
   <div class="card">
-    <h3>Wel</h3>
+    <h3>Wel — alle componenten in de marginale druk op arbeid</h3>
 
 - Box 1 inkomstenbelasting met heffingskortingen (AHK, AK, IACK)
-- Toeslagen: zorgtoeslag, huurtoeslag, kindgebonden budget
-- Werkgeverslasten incl. pensioen
-- Vergelijking AOW vs. niet-AOW
+- Toeslagen: zorgtoeslag, huurtoeslag, kindgebonden budget, kinderopvangtoeslag
+- Werkgeverslasten incl. variabele WHK en pensioen
+- Eigen woning: hypotheekrenteaftrek met tariefcap (37,48%) en eigenwoningforfait
+- 30%-regeling voor expats (gecapped op WNT-norm)
+- Studieleningterugbetaling (stelsel SF2015 / SF2024 of stelsel vóór 2015)
+- Toeslagpartner als <em>volledig</em> tweede scenario: eigen schijven, eigen heffingskortingen — verzamelinkomens worden opgeteld voor toeslagentoetsing
+- Vergelijking AOW vs. niet-AOW (per persoon instelbaar)
 - Marginale druk in beide richtingen: bruto en werkgeverskost
   </div>
   <div class="card">
-    <h3>Nog niet (zelf toe te voegen)</h3>
+    <h3>Buiten scope (niet relevant voor druk op arbeid)</h3>
 
-- Box 2 (aanmerkelijk belang)
-- Box 3 (vermogen)
-- Hypotheekrenteaftrek / eigenwoningforfait
-- Kinderopvangtoeslag (sterk afhankelijk van uren)
-- Sectorpremies WHK / specifieke cao's
-- 30%-regeling voor expats
-- Studieleningterugbetaling (effectief +4% druk in afbouwzone)
+- <strong>Box 2</strong> (aanmerkelijk belang) — separate box, beïnvloedt marginale druk op een loonsverhoging niet. Tarieven staan op de <a href="./parameters">parameters-pagina</a>.
+- <strong>Box 3</strong> (vermogen) — idem; forfaitair rendement.
+- <strong>Niet-arbeidsgebonden inkomsten</strong>: ontvangen alimentatie, lijfrente.
+- <strong>Reiskostenvergoeding</strong>, ET-regeling, eindheffingen onder de WKR — meestal cao-specifiek.
   </div>
 </div>
 

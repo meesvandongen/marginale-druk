@@ -7,9 +7,12 @@ export const COMPONENT_ORDER = [
   "Verlies algemene heffingskorting",
   "Verlies arbeidskorting",
   "Verlies IACK",
+  "Pensioen werknemer",
   "Verlies zorgtoeslag",
   "Verlies huurtoeslag",
-  "Verlies kindgebonden budget"
+  "Verlies kindgebonden budget",
+  "Verlies kinderopvangtoeslag",
+  "Studielening"
 ];
 
 export const COMPONENT_COLOR = {
@@ -17,9 +20,12 @@ export const COMPONENT_COLOR = {
   "Verlies algemene heffingskorting":"#6366f1", // indigo-500
   "Verlies arbeidskorting":          "#0ea5e9", // sky-500
   "Verlies IACK":                    "#22d3ee", // cyan-400
+  "Pensioen werknemer":              "#7c3aed", // violet-600
   "Verlies zorgtoeslag":             "#f97316", // orange-500
   "Verlies huurtoeslag":             "#ef4444", // red-500
   "Verlies kindgebonden budget":     "#ec4899", // pink-500
+  "Verlies kinderopvangtoeslag":     "#a855f7", // purple-500
+  "Studielening":                    "#facc15", // yellow-400
   "Naar jou":                        "#16a34a"  // green-600
 };
 
@@ -33,6 +39,7 @@ export const WIG_ORDER = [
   "Vakantiegeld",
   "Pensioen werknemer",
   "Inkomstenbelasting",
+  "Studielening",
   "Toeslagen",
   "Besteedbaar"
 ];
@@ -44,6 +51,7 @@ export const WIG_COLOR = {
   "Vakantiegeld":              "#f59e0b",
   "Pensioen werknemer":        "#a855f7",
   "Inkomstenbelasting":        "#4338ca",
+  "Studielening":              "#facc15",
   "Toeslagen":                 "#84cc16",
   "Besteedbaar":               "#16a34a"
 };

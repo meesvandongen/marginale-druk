@@ -1,5 +1,5 @@
-// Pure berekeningsfuncties. Alles in jaarbedragen.
-// Alle functies zijn deterministisch en alleen client-side.
+// Pure berekeningsfuncties voor de Nederlandse marginale druk 2026.
+// Alles in jaarbedragen, alles deterministisch, alles client-side.
 import { PARAMS_2026 } from "./params.js";
 
 const P = PARAMS_2026;
@@ -24,7 +24,7 @@ export function box1MarginalRate(belastbaarInkomen, { aow = false } = {}) {
   return brackets[brackets.length - 1].rate;
 }
 
-// -------- Algemene heffingskorting --------
+// -------- Heffingskortingen --------
 export function algemeneHeffingskorting(belastbaarInkomen, { aow = false } = {}) {
   const c = aow ? P.algemeneHeffingskorting.overAOW : P.algemeneHeffingskorting.underAOW;
   if (belastbaarInkomen <= c.afbouwStart) return c.max;
@@ -33,7 +33,6 @@ export function algemeneHeffingskorting(belastbaarInkomen, { aow = false } = {})
   return Math.max(0, c.max - verlaging);
 }
 
-// -------- Arbeidskorting (op arbeidsinkomen) --------
 export function arbeidskorting(arbeidsinkomen, { aow = false } = {}) {
   const segs = aow ? P.arbeidskorting.overAOW : P.arbeidskorting.underAOW;
   for (const s of segs) {
@@ -44,7 +43,6 @@ export function arbeidskorting(arbeidsinkomen, { aow = false } = {}) {
   return 0;
 }
 
-// -------- IACK --------
 export function iack(arbeidsinkomen, { jongsteKindOnder12 = false } = {}) {
   if (!jongsteKindOnder12) return 0;
   if (arbeidsinkomen <= P.iack.drempel) return 0;
@@ -52,30 +50,44 @@ export function iack(arbeidsinkomen, { jongsteKindOnder12 = false } = {}) {
   return Math.min(P.iack.max, opbouw);
 }
 
-// -------- Loonbelasting na heffingskortingen --------
-export function inkomstenbelastingNetto(
-  inkomen,
-  { aow = false, jongsteKindOnder12 = false } = {}
-) {
-  // arbeidsinkomen wordt voor eenvoud gelijkgesteld aan box1-inkomen
-  // (in praktijk minus winst-uit-onderneming, etc.).
-  const tax = box1Tax(inkomen, { aow });
-  const ahk = algemeneHeffingskorting(inkomen, { aow });
-  const ak = arbeidskorting(inkomen, { aow });
-  const ic = iack(inkomen, { jongsteKindOnder12 });
-  return Math.max(0, tax - ahk - ak - ic);
+// -------- Eigen woning --------
+// Saldo eigen woning = EWF (bijtelling) − hypotheekrente (aftrek).
+// Negatief = aftrekpost. Aftrek-voordeel is gecapped op tarief eerste schijf.
+export function eigenWoningSaldo({ hypoRente = 0, woz = 0 } = {}) {
+  return P.eigenWoning.ewfPct * woz - hypoRente;
+}
+
+// -------- 30%-regeling (expat) --------
+// 30% van bruto onbelast, grondslag gecapped op WNT-norm.
+export function expatVrij(bruto, { expat = false } = {}) {
+  if (!expat) return 0;
+  const e = P.expatRegeling;
+  return e.pct * Math.min(bruto, e.plafondGrondslag);
+}
+
+// -------- Studielening (terugbetalingsdruk) --------
+export function studielening(toetsingsinkomen, {
+  studieleningJaar = 0,
+  stelselOud = false,
+  partner = false
+} = {}) {
+  if (!studieleningJaar || studieleningJaar <= 0) return 0;
+  const s = P.studielening;
+  const drempel = partner ? s.drempel.partner : s.drempel.alleen;
+  const pct = stelselOud ? s.pctOud : s.pctSF2015;
+  const overdrempel = Math.max(0, toetsingsinkomen - drempel);
+  return Math.min(studieleningJaar, pct * overdrempel);
 }
 
 // -------- Toeslagen --------
 export function zorgtoeslag(huishoudInkomen, { partner = false } = {}) {
   const z = P.zorgtoeslag;
   const aantal = partner ? 2 : 1;
-  const base = aantal === 2 ? P.zorgtoeslag.standaardpremie * 2 : P.zorgtoeslag.standaardpremie;
+  const base = aantal === 2 ? z.standaardpremie * 2 : z.standaardpremie;
   const norm = partner ? z.norm.partner : z.norm.alleen;
   const grens = partner ? z.inkomensgrens.partner : z.inkomensgrens.alleen;
   const max = partner ? z.max.partner : z.max.alleen;
   if (huishoudInkomen >= grens) return 0;
-  // Vereenvoudigd: max - afbouw
   const inkomenBovenDrempel = Math.max(0, huishoudInkomen - z.drempel);
   const inkomenOnderDrempel = Math.min(huishoudInkomen, z.drempel);
   const normpremie = norm * inkomenOnderDrempel + z.afbouwPct * inkomenBovenDrempel;
@@ -108,13 +120,9 @@ export function huurtoeslag(huishoudInkomen, huurMaand, { partner = false } = {}
   return Math.max(0, maxJaar - verlaging);
 }
 
-export function kindgebondenBudget(
-  huishoudInkomen,
-  { partner = false, kinderen = [] } = {}
-) {
+export function kindgebondenBudget(huishoudInkomen, { partner = false, kinderen = [] } = {}) {
   const k = P.kindgebondenBudget;
   if (kinderen.length === 0) return 0;
-  // Basisbedrag per kind + leeftijdstoeslagen
   let max = 0;
   kinderen.forEach((leeftijd, i) => {
     let kindBedrag = k.perKindBasis;
@@ -130,96 +138,198 @@ export function kindgebondenBudget(
   return Math.max(0, max - verlaging);
 }
 
+// -------- Kinderopvangtoeslag --------
+// Vereenvoudigd: vergoedingspercentage daalt lineair tussen inkomenMin en
+// inkomenMax. Echte tabel kent tientallen treden, maar voor de marginale
+// druk telt vooral de afbouwhelling — die is hier (vergMax-vergMin)/range.
+export function kinderopvangtoeslag(huishoudInkomen, {
+  kovUren = 0,
+  kovUurprijs = 0
+} = {}) {
+  if (kovUren <= 0 || kovUurprijs <= 0) return 0;
+  const k = P.kinderopvangtoeslag;
+  let pct;
+  if (huishoudInkomen <= k.inkomenMin) pct = k.vergoedingMax;
+  else if (huishoudInkomen >= k.inkomenMax) pct = k.vergoedingMin;
+  else {
+    const t = (huishoudInkomen - k.inkomenMin) / (k.inkomenMax - k.inkomenMin);
+    pct = k.vergoedingMax - t * (k.vergoedingMax - k.vergoedingMin);
+  }
+  const uurprijs = Math.min(kovUurprijs, k.maxUurprijsDagopvang);
+  return pct * uurprijs * kovUren;
+}
+
 // -------- Werkgeverslasten --------
 export function werkgeverslasten(brutoLoon, opties = {}) {
   const {
-    flex = false,            // WW-hoog ipv laag
-    grootWerkgever = false,  // Aof-hoog ipv laag
-    pensioenWerkgeverPct,    // override; default uit params
-    franchise = PARAMS_2026.werkgeverslasten.franchisePensioen,
+    flex = false,
+    grootWerkgever = false,
+    pensioenWerkgeverPct,
+    franchise = P.werkgeverslasten.franchisePensioen,
+    whk = P.werkgeverslasten.whkGemiddeld,
     vakantiegeldOpgeteld = true
   } = opties;
-  const w = PARAMS_2026.werkgeverslasten;
-  const grondslag = vakantiegeldOpgeteld ? brutoLoon * (1 + PARAMS_2026.vakantiegeldPct) : brutoLoon;
+  const w = P.werkgeverslasten;
+  const grondslag = vakantiegeldOpgeteld ? brutoLoon * (1 + P.vakantiegeldPct) : brutoLoon;
   const premieloon = Math.min(grondslag, w.maxPremieloon);
 
   const ww = (flex ? w.wwHoog : w.wwLaag) * premieloon;
   const aof = (grootWerkgever ? w.aofHoog : w.aofLaag) * premieloon;
   const aofKO = w.aofOpslagKinderopvang * premieloon;
-  const whk = w.whkGemiddeld * premieloon;
+  const whkBedrag = whk * premieloon;
   const zvw = w.zvwWerkgever * premieloon;
 
   const pensioenPct = pensioenWerkgeverPct ?? w.pensioenWerkgeverDefault;
   const pensioenGrondslag = Math.max(0, grondslag - franchise);
   const pensioen = pensioenPct * pensioenGrondslag;
 
-  const vakantiegeld = vakantiegeldOpgeteld ? brutoLoon * PARAMS_2026.vakantiegeldPct : 0;
+  const vakantiegeld = vakantiegeldOpgeteld ? brutoLoon * P.vakantiegeldPct : 0;
 
   return {
-    ww, aof, aofKO, whk, zvw, pensioen, vakantiegeld,
-    totaal: ww + aof + aofKO + whk + zvw + pensioen + vakantiegeld
+    ww, aof, aofKO, whk: whkBedrag, zvw, pensioen, vakantiegeld,
+    totaal: ww + aof + aofKO + whkBedrag + zvw + pensioen + vakantiegeld
   };
 }
 
-// -------- Volledig scenario voor een gegeven brutoloon --------
+// -------- IB inclusief eigen-woning-tariefcap --------
+// Tariefsaanpassing aftrek eigen woning (37,48% in 2026): aftrek-voordeel mag
+// nooit meer zijn dan dat percentage van het aftrekbedrag.
+function box1MetEigenWoning(belastbaarLoon, ewSaldo, { aow = false } = {}) {
+  if (ewSaldo >= 0) {
+    return box1Tax(belastbaarLoon + ewSaldo, { aow });
+  }
+  const aftrek = -ewSaldo;
+  const ibZonderAftrek = box1Tax(belastbaarLoon, { aow });
+  const ibMetVolledigeAftrek = box1Tax(Math.max(0, belastbaarLoon - aftrek), { aow });
+  const voordeelVolledig = ibZonderAftrek - ibMetVolledigeAftrek;
+  const voordeelMax = aftrek * P.eigenWoning.maxAftrekTarief;
+  return ibZonderAftrek - Math.min(voordeelVolledig, voordeelMax);
+}
+
+// -------- Per-persoon scenario (intern) --------
+function persoonScenario({
+  bruto,
+  aow = false,
+  expat = false,
+  pensioenWerknemerPct = 0,
+  franchise = 0,
+  jongsteKindOnder12 = false,
+  hypoRente = 0,
+  woz = 0
+}) {
+  const grondslagPensioen = Math.max(0, bruto - franchise);
+  const eigenPensioen = pensioenWerknemerPct * grondslagPensioen;
+  const expat30 = expatVrij(bruto, { expat });
+  const belastbaarLoon = Math.max(0, bruto - eigenPensioen - expat30);
+
+  const ewSaldo = eigenWoningSaldo({ hypoRente, woz });
+  const verzamelinkomen = Math.max(0, belastbaarLoon + ewSaldo);
+
+  const ib = box1MetEigenWoning(belastbaarLoon, ewSaldo, { aow });
+  const ahk = algemeneHeffingskorting(verzamelinkomen, { aow });
+  const ak = arbeidskorting(belastbaarLoon, { aow });
+  const ic = iack(belastbaarLoon, { jongsteKindOnder12 });
+  const ibNetto = Math.max(0, ib - ahk - ak - ic);
+
+  const netto = bruto - eigenPensioen - ibNetto;
+
+  return {
+    bruto, eigenPensioen, expat30,
+    belastbaarLoon, ewSaldo, verzamelinkomen,
+    ib, ahk, ak, ic, ibNetto, netto
+  };
+}
+
+// -------- Volledig scenario --------
 export function scenario(input) {
   const {
-    bruto,                       // jaarbruto excl. vakantiegeld
+    bruto,
+    aow = false,
+    expat = false,
     partner = false,
     partnerInkomen = 0,
-    aow = false,
+    partnerAOW = false,
     jongsteKindOnder12 = false,
     huurMaand = 0,
     kinderen = [],
     flex = false,
     grootWerkgever = false,
+    whk = P.werkgeverslasten.whkGemiddeld,
     pensioenWerkgeverPct,
-    pensioenWerknemerPct = PARAMS_2026.werkgeverslasten.pensioenWerknemerDefault,
-    franchise = PARAMS_2026.werkgeverslasten.franchisePensioen,
-    vakantiegeldInBruto = false  // toon je vakantiegeld als onderdeel van bruto?
+    pensioenWerknemerPct = P.werkgeverslasten.pensioenWerknemerDefault,
+    franchise = P.werkgeverslasten.franchisePensioen,
+    hypoRente = 0,
+    woz = 0,
+    studieleningJaar = 0,
+    stelselOud = false,
+    kovUren = 0,
+    kovUurprijs = 0,
+    vakantiegeldInBruto = false
   } = input;
 
-  // Belastbaar loon = bruto - werknemerdeel pensioen (bovenop franchise).
-  const grondslagPensioen = Math.max(0, bruto - franchise);
-  const eigenPensioen = pensioenWerknemerPct * grondslagPensioen;
-  const belastbaar = Math.max(0, bruto - eigenPensioen);
+  const me = persoonScenario({
+    bruto, aow, expat,
+    pensioenWerknemerPct, franchise,
+    jongsteKindOnder12,
+    hypoRente, woz
+  });
 
-  const ib = box1Tax(belastbaar, { aow });
-  const ahk = algemeneHeffingskorting(belastbaar, { aow });
-  const ak = arbeidskorting(belastbaar, { aow });
-  const ic = iack(belastbaar, { jongsteKindOnder12 });
-  const ibNetto = Math.max(0, ib - ahk - ak - ic);
+  let partnerSce = null;
+  if (partner && partnerInkomen > 0) {
+    partnerSce = persoonScenario({
+      bruto: partnerInkomen,
+      aow: partnerAOW,
+      expat: false,
+      pensioenWerknemerPct: 0,
+      franchise: 0,
+      jongsteKindOnder12: false,
+      hypoRente: 0,
+      woz: 0
+    });
+  }
 
-  const huishoudInkomen = belastbaar + (partner ? partnerInkomen : 0);
-  const zt = zorgtoeslag(huishoudInkomen, { partner });
-  const ht = huurtoeslag(huishoudInkomen, huurMaand, { partner });
-  const kgb = kindgebondenBudget(huishoudInkomen, { partner, kinderen });
+  const huishoudVerzamel = me.verzamelinkomen + (partnerSce?.verzamelinkomen ?? 0);
 
-  const netto = bruto - eigenPensioen - ibNetto;
-  const besteedbaar = netto + zt + ht + kgb;
+  const zt  = zorgtoeslag(huishoudVerzamel, { partner });
+  const ht  = huurtoeslag(huishoudVerzamel, huurMaand, { partner });
+  const kgb = kindgebondenBudget(huishoudVerzamel, { partner, kinderen });
+  const kot = kinderopvangtoeslag(huishoudVerzamel, { kovUren, kovUurprijs });
+
+  const studielast = studielening(me.verzamelinkomen, {
+    studieleningJaar, stelselOud, partner
+  });
+
+  const eigenBesteedbaar = me.netto - studielast + zt + ht + kgb + kot;
 
   const wgl = werkgeverslasten(bruto, {
-    flex, grootWerkgever, pensioenWerkgeverPct, franchise,
+    flex, grootWerkgever, whk,
+    pensioenWerkgeverPct, franchise,
     vakantiegeldOpgeteld: !vakantiegeldInBruto
   });
   const totaalKostenWerkgever = bruto + wgl.totaal;
 
   return {
     bruto,
-    eigenPensioen,
-    belastbaar,
-    ib, ahk, ak, ic, ibNetto,
-    netto,
-    huishoudInkomen,
+    eigenPensioen: me.eigenPensioen,
+    expat30: me.expat30,
+    belastbaar: me.belastbaarLoon,
+    ewSaldo: me.ewSaldo,
+    verzamelinkomen: me.verzamelinkomen,
+    ib: me.ib, ahk: me.ahk, ak: me.ak, ic: me.ic, ibNetto: me.ibNetto,
+    netto: me.netto,
+    studielening: studielast,
+    huishoudInkomen: huishoudVerzamel,
+    partner: partnerSce,
     zorgtoeslag: zt,
     huurtoeslag: ht,
     kindgebondenBudget: kgb,
-    toeslagenTotaal: zt + ht + kgb,
-    besteedbaar,
+    kinderopvangtoeslag: kot,
+    toeslagenTotaal: zt + ht + kgb + kot,
+    besteedbaar: eigenBesteedbaar,
     werkgever: wgl,
     totaalKostenWerkgever,
-    wig: totaalKostenWerkgever - besteedbaar,
-    wigPct: (totaalKostenWerkgever - besteedbaar) / totaalKostenWerkgever
+    wig: totaalKostenWerkgever - eigenBesteedbaar,
+    wigPct: (totaalKostenWerkgever - eigenBesteedbaar) / totaalKostenWerkgever
   };
 }
 
@@ -236,16 +346,18 @@ export function marginaleDruk(input, { delta = 100 } = {}) {
     deltaBesteedbaar: dBesteedbaar,
     deltaBruto: dBruto,
     deltaWerkgever: dWerkgever,
-    // Bijdragen aan marginale druk
     delta: {
-      ib: b.ib - a.ib,
-      ahk: -(b.ahk - a.ahk),
-      ak: -(b.ak - a.ak),
-      ic: -(b.ic - a.ic),
-      zorgtoeslag: -(b.zorgtoeslag - a.zorgtoeslag),
-      huurtoeslag: -(b.huurtoeslag - a.huurtoeslag),
-      kindgebondenBudget: -(b.kindgebondenBudget - a.kindgebondenBudget),
-      werkgeverslasten: b.werkgever.totaal - a.werkgever.totaal
+      ib:                  b.ib - a.ib,
+      ahk:                 -(b.ahk - a.ahk),
+      ak:                  -(b.ak - a.ak),
+      ic:                  -(b.ic - a.ic),
+      eigenPensioen:        (b.eigenPensioen - a.eigenPensioen),
+      zorgtoeslag:         -(b.zorgtoeslag - a.zorgtoeslag),
+      huurtoeslag:         -(b.huurtoeslag - a.huurtoeslag),
+      kindgebondenBudget:  -(b.kindgebondenBudget - a.kindgebondenBudget),
+      kinderopvangtoeslag: -(b.kinderopvangtoeslag - a.kinderopvangtoeslag),
+      studielening:         (b.studielening - a.studielening),
+      werkgeverslasten:    b.werkgever.totaal - a.werkgever.totaal
     }
   };
 }
@@ -256,7 +368,12 @@ export function curve(baseInput, { from = 10000, to = 150000, step = 500 } = {})
   for (let bruto = from; bruto <= to; bruto += step) {
     const s = scenario({ ...baseInput, bruto });
     const m = marginaleDruk({ ...baseInput, bruto });
-    out.push({ bruto, ...s, marginaal: m.drukOpBruto, marginaalWg: m.drukOpWerkgever, marginaalDelta: m.delta });
+    out.push({
+      bruto, ...s,
+      marginaal: m.drukOpBruto,
+      marginaalWg: m.drukOpWerkgever,
+      marginaalDelta: m.delta
+    });
   }
   return out;
 }

@@ -33,11 +33,19 @@ const aow = view(Inputs.toggle({label: "AOW-leeftijd"}));
 ```
 
 ```js
+const expat = view(Inputs.toggle({label: "30%-regeling"}));
+```
+
+```js
 const partner = view(Inputs.toggle({label: "Toeslagpartner"}));
 ```
 
 ```js
 const partnerInkomen = view(Inputs.range([0, 150000], {label: "Inkomen partner (€)", value: 0, step: 500, disabled: !partner}));
+```
+
+```js
+const partnerAOW = view(Inputs.toggle({label: "Partner AOW-leeftijd", disabled: !partner}));
 ```
 
   </div>
@@ -56,6 +64,14 @@ const jongsteKindOnder12 = view(Inputs.toggle({label: "Jongste kind < 12 (IACK)"
 const huurMaand = view(Inputs.range([0, 1200], {label: "Maandhuur (€)", value: 0, step: 10}));
 ```
 
+```js
+const woz = view(Inputs.range([0, 1000000], {label: "WOZ-waarde eigen woning (€)", value: 0, step: 5000}));
+```
+
+```js
+const hypoRente = view(Inputs.range([0, 30000], {label: "Hypotheekrente per jaar (€)", value: 0, step: 100, disabled: woz === 0}));
+```
+
   </div>
   <div class="card">
     <h3>Arbeidsrelatie & pensioen</h3>
@@ -66,6 +82,10 @@ const flex = view(Inputs.toggle({label: "Flex-/oproepcontract (WW-hoog)"}));
 
 ```js
 const grootWerkgever = view(Inputs.toggle({label: "Grote werkgever (Aof-hoog)"}));
+```
+
+```js
+const whk = view(Inputs.range([0.005, 0.05], {label: "WHK (sectoraal, %)", value: 0.0152, step: 0.001, format: pctFmt}));
 ```
 
 ```js
@@ -83,14 +103,45 @@ const franchise = view(Inputs.range([0, 25000], {label: "Franchise pensioen (€
   </div>
 </div>
 
+<div class="grid grid-cols-2" style="grid-auto-rows: auto;">
+  <div class="card">
+    <h3>Studielening</h3>
+
+```js
+const studieleningJaar = view(Inputs.range([0, 12000], {label: "Aflossing per jaar (€)", value: 0, step: 100}));
+```
+
+```js
+const stelselOud = view(Inputs.toggle({label: "Stelsel vóór 2015 (12% i.p.v. 4%)", disabled: studieleningJaar === 0}));
+```
+
+  </div>
+  <div class="card">
+    <h3>Kinderopvang</h3>
+
+```js
+const kovUren = view(Inputs.range([0, 4000], {label: "Opvanguren per jaar (totaal)", value: 0, step: 50}));
+```
+
+```js
+const kovUurprijs = view(Inputs.range([0, 15], {label: "Werkelijke uurprijs (€)", value: 10, step: 0.10, disabled: kovUren === 0}));
+```
+
+  </div>
+</div>
+
 ```js
 const kinderen = Array.from({length: aantalKinderen}, () => jongsteKindOnder12 ? 8 : 13);
 
 const baseInput = {
-  bruto, aow, partner, partnerInkomen,
+  bruto, aow, expat,
+  partner, partnerInkomen, partnerAOW,
   jongsteKindOnder12, huurMaand, kinderen,
-  flex, grootWerkgever,
-  pensioenWerkgeverPct, pensioenWerknemerPct, franchise
+  flex, grootWerkgever, whk,
+  pensioenWerkgeverPct, pensioenWerknemerPct, franchise,
+  woz, hypoRente,
+  studieleningJaar, stelselOud,
+  kovUren, kovUurprijs
 };
 
 const {sce, md, rows, long, wig} = dashboard(baseInput, {from: 10000, to: 160000, step: 500});
@@ -154,10 +205,22 @@ const here = nearestRow(rows, bruto);
       <tr><th>− Pensioen werknemer</th><td>${fmtEur(-sce.eigenPensioen)}</td></tr>
       <tr><th>− Inkomstenbelasting netto</th><td>${fmtEur(-sce.ibNetto)}</td></tr>
       <tr><th>= Nettoloon</th><td>${fmtEur(sce.netto)}</td></tr>
+      ${sce.studielening > 0 ? html`<tr><th>− Studielening</th><td>${fmtEur(-sce.studielening)}</td></tr>` : ""}
       <tr><th>+ Zorgtoeslag</th><td>${fmtEur(sce.zorgtoeslag)}</td></tr>
       <tr><th>+ Huurtoeslag</th><td>${fmtEur(sce.huurtoeslag)}</td></tr>
       <tr><th>+ Kindgebonden budget</th><td>${fmtEur(sce.kindgebondenBudget)}</td></tr>
+      <tr><th>+ Kinderopvangtoeslag</th><td>${fmtEur(sce.kinderopvangtoeslag)}</td></tr>
       <tr class="emph"><th>= Besteedbaar</th><td>${fmtEur(sce.besteedbaar)}</td></tr>
+      <tr><th colspan="2" class="section">Belastbaar inkomen</th></tr>
+      <tr><th>Belastbaar loon</th><td>${fmtEur(sce.belastbaar)}</td></tr>
+      ${sce.expat30 > 0 ? html`<tr><th>30%-regeling onbelast</th><td>${fmtEur(sce.expat30)}</td></tr>` : ""}
+      ${Math.abs(sce.ewSaldo) > 0.5 ? html`<tr><th>Saldo eigen woning</th><td class=${sce.ewSaldo < 0 ? "neg" : ""}>${fmtEur(sce.ewSaldo)}</td></tr>` : ""}
+      <tr><th>Verzamelinkomen</th><td>${fmtEur(sce.verzamelinkomen)}</td></tr>
+      ${sce.partner ? html`<tr><th colspan="2" class="section">Partner (apart belast)</th></tr>
+        <tr><th>Partner bruto</th><td>${fmtEur(sce.partner.bruto)}</td></tr>
+        <tr><th>Partner IB netto</th><td>${fmtEur(sce.partner.ibNetto)}</td></tr>
+        <tr><th>Partner netto</th><td>${fmtEur(sce.partner.netto)}</td></tr>
+        <tr><th>Huishoudverzamelinkomen</th><td>${fmtEur(sce.huishoudInkomen)}</td></tr>` : ""}
       <tr><th colspan="2" class="section">Werkgeverslasten</th></tr>
       <tr><th>Vakantiegeld</th><td>${fmtEur(sce.werkgever.vakantiegeld)}</td></tr>
       <tr><th>WW (${flex ? "hoog" : "laag"})</th><td>${fmtEur(sce.werkgever.ww)}</td></tr>
@@ -178,16 +241,23 @@ function componentRows(r) {
     "Verlies algemene heffingskorting",
     "Verlies arbeidskorting",
     "Verlies IACK",
+    "Pensioen werknemer",
     "Verlies zorgtoeslag",
     "Verlies huurtoeslag",
-    "Verlies kindgebonden budget"
+    "Verlies kindgebonden budget",
+    "Verlies kinderopvangtoeslag",
+    "Studielening"
   ];
   return html`${components.map(c => html`<tr><th>${c}</th><td class=${r[c] < 0 ? "neg" : ""}>${fmtPct(r[c])}</td></tr>`)}<tr class="emph"><th>Naar jou</th><td>${fmtPct(1 - r.marginaal)}</td></tr>`;
 }
 ```
 
 <div class="callout">
-  <strong>Disclaimer.</strong> Vereenvoudigd model. Geen rekening met box 2/3,
-  hypotheekrenteaftrek, kinderopvangtoeslag, 30%-regeling, studieleningterugbetaling
-  of sectorale premies. Geen fiscaal advies.
+  <strong>Disclaimer.</strong> Dit model neemt alle gangbare factoren voor
+  marginale druk op arbeid mee: box 1 met heffingskortingen, alle toeslagen
+  (incl. kinderopvang), eigen woning met tariefcap, 30%-regeling,
+  studieleningterugbetaling, sectorale WHK en partner als volledig apart
+  scenario. Box 2 en box 3 vallen buiten de marginale druk op een
+  loonsverhoging en zijn alleen ter referentie opgenomen op de
+  <a href="./parameters">parameters-pagina</a>. Geen fiscaal advies.
 </div>
