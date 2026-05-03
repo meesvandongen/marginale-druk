@@ -19,9 +19,12 @@ export function curveWide(baseInput, {from = 10000, to = 150000, step = 500} = {
       "Verlies algemene heffingskorting":m.delta.ahk / dB,
       "Verlies arbeidskorting":          m.delta.ak / dB,
       "Verlies IACK":                    m.delta.ic / dB,
+      "Pensioen werknemer":              m.delta.eigenPensioen / dB,
       "Verlies zorgtoeslag":             m.delta.zorgtoeslag / dB,
       "Verlies huurtoeslag":             m.delta.huurtoeslag / dB,
-      "Verlies kindgebonden budget":     m.delta.kindgebondenBudget / dB
+      "Verlies kindgebonden budget":     m.delta.kindgebondenBudget / dB,
+      "Verlies kinderopvangtoeslag":     m.delta.kinderopvangtoeslag / dB,
+      "Studielening":                    m.delta.studielening / dB
     };
     rows.push(row);
   }
@@ -63,6 +66,7 @@ export function wigSegments(sce) {
     {seg: "Vakantiegeld",              value: sce.werkgever.vakantiegeld},
     {seg: "Pensioen werknemer",        value: sce.eigenPensioen},
     {seg: "Inkomstenbelasting",        value: sce.ibNetto},
+    {seg: "Studielening",              value: sce.studielening ?? 0},
     {seg: "Toeslagen",                 value: -sce.toeslagenTotaal},
     {seg: "Besteedbaar",               value: sce.besteedbaar}
   ].filter(s => Math.abs(s.value) > 0.5);

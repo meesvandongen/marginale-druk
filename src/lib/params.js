@@ -114,5 +114,61 @@ export const PARAMS_2026 = {
   },
 
   // Vakantiegeld
-  vakantiegeldPct: 0.08
+  vakantiegeldPct: 0.08,
+
+  // ---------- Studielening (terugbetalingsdruk) ----------
+  // Onder drempel: geen aflossing. Boven drempel: een vast percentage van het
+  // verschil. Drempel ≈ 100% WML alleenstaand / 143% WML met partner (2026).
+  studielening: {
+    drempel: { alleen: 25400, partner: 36322 },
+    pctSF2015: 0.04,   // huidig stelsel sinds 2015 + stelsel 2024
+    pctOud:    0.12    // stelsel van vóór 2015
+  },
+
+  // ---------- Kinderopvangtoeslag ----------
+  // Vereenvoudigd: lineaire afbouw van vergoedingspercentage tussen
+  // inkomenMin (96%) en inkomenMax (33%). Werkelijke schalentabel kent
+  // tientallen treden — voor een marginale-druk-analyse is een lineaire
+  // benadering meer dan voldoende want de afbouwhelling is wat telt.
+  kinderopvangtoeslag: {
+    maxUurprijsDagopvang: 11.06,
+    maxUurprijsBSO:        9.52,
+    maxUurprijsGastouder:  8.30,
+    vergoedingMax: 0.96,
+    vergoedingMin: 0.33,
+    inkomenMin: 25000,
+    inkomenMax: 230000
+  },
+
+  // ---------- 30%-regeling (expatregeling) ----------
+  // 30% van bruto loon onbelast; grondslag gecapped op WNT-norm.
+  expatRegeling: {
+    pct: 0.30,
+    plafondGrondslag: 246000
+  },
+
+  // ---------- Eigen woning ----------
+  // Eigenwoningforfait als bijtelling op belastbaar inkomen, hypotheekrente
+  // als aftrek. Het belastingvoordeel op de aftrek is gecapped op het tarief
+  // van de eerste schijf IB-deel (37,48% in 2026).
+  eigenWoning: {
+    ewfPct: 0.0035,
+    maxAftrekTarief: 0.3748
+  },
+
+  // ---------- Box 2 / Box 3 ----------
+  // Box 2 en 3 vallen buiten de marginale druk op arbeid (separate boxen),
+  // maar staan hier voor referentie en eventueel aanvullende berekeningen
+  // op huishoudniveau.
+  box2: {
+    schijven: [
+      { upTo: 67000,    rate: 0.245 },
+      { upTo: Infinity, rate: 0.31  }
+    ]
+  },
+  box3: {
+    heffingsvrijVermogen: 57684,
+    forfaitairRendement: 0.0589,
+    tarief: 0.36
+  }
 };
