@@ -128,6 +128,54 @@ table.kv th.section {
 }
 table.kv td.neg { color: #16a34a; }
 
+/* Labelled build-up table: row letters + per-line additions/subtractions. */
+table.opbouw {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: .9rem;
+}
+table.opbouw thead th {
+  text-align: left;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--theme-foreground-muted);
+  font-weight: 600;
+  padding: 0 .4rem .4rem;
+  border-bottom: 1px solid var(--theme-foreground-faintest);
+}
+table.opbouw thead th.bedrag { text-align: right; }
+table.opbouw td {
+  padding: .4rem .4rem;
+  border-bottom: 1px solid var(--theme-foreground-faintest);
+  vertical-align: baseline;
+}
+table.opbouw td.ref {
+  width: 1%;
+  white-space: nowrap;
+  color: var(--theme-foreground-muted);
+  font-style: italic;
+}
+table.opbouw td.bedrag {
+  text-align: right;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+table.opbouw td.bedrag.min { color: var(--theme-foreground-muted); }
+table.opbouw tr.emph {
+  font-weight: 600;
+  background: var(--md-accent-soft);
+}
+table.opbouw tr.emph td { border-bottom-color: var(--theme-foreground-faint, rgba(15,23,42,.12)); }
+table.opbouw .formula {
+  font-variant-numeric: normal;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--md-accent);
+  white-space: nowrap;
+}
+
 /* ---------- Plot tweaks ---------- */
 figure { margin: 0; }
 figure svg { display: block; }

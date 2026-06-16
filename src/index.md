@@ -33,7 +33,11 @@ const aow = view(Inputs.toggle({label: "AOW-leeftijd"}));
 ```
 
 ```js
-const expat = view(Inputs.toggle({label: "30%-regeling"}));
+const arbeidsongeschikt = view(Inputs.toggle({label: "Arbeidsongeschiktheidsuitkering (WIA/WAO)"}));
+```
+
+```js
+const expat = view(Inputs.toggle({label: "30%-regeling", disabled: arbeidsongeschikt}));
 ```
 
 ```js
@@ -77,28 +81,30 @@ const hypoRente = view(Inputs.range([0, 30000], {label: "Hypotheekrente per jaar
     <h3>Arbeidsrelatie & pensioen</h3>
 
 ```js
-const flex = view(Inputs.toggle({label: "Flex-/oproepcontract (WW-hoog)"}));
+const flex = view(Inputs.toggle({label: "Flex-/oproepcontract (WW-hoog)", disabled: arbeidsongeschikt}));
 ```
 
 ```js
-const grootWerkgever = view(Inputs.toggle({label: "Grote werkgever (Aof-hoog)"}));
+const grootWerkgever = view(Inputs.toggle({label: "Grote werkgever (Aof-hoog)", disabled: arbeidsongeschikt}));
 ```
 
 ```js
-const whk = view(Inputs.range([0.005, 0.05], {label: "WHK (sectoraal, %)", value: 0.0152, step: 0.001, format: pctFmt}));
+const whk = view(Inputs.range([0.005, 0.05], {label: "WHK (sectoraal, %)", value: 0.0152, step: 0.001, format: pctFmt, disabled: arbeidsongeschikt}));
 ```
 
 ```js
-const pensioenWerkgeverPct = view(Inputs.range([0, 0.30], {label: "Pensioen werkgever (%)", value: 0.16, step: 0.005, format: pctFmt}));
+const pensioenWerkgeverPct = view(Inputs.range([0, 0.30], {label: "Pensioen werkgever (%)", value: 0.16, step: 0.005, format: pctFmt, disabled: arbeidsongeschikt}));
 ```
 
 ```js
-const pensioenWerknemerPct = view(Inputs.range([0, 0.15], {label: "Pensioen werknemer (%)", value: 0.06, step: 0.005, format: pctFmt}));
+const pensioenWerknemerPct = view(Inputs.range([0, 0.15], {label: "Pensioen werknemer (%)", value: 0.06, step: 0.005, format: pctFmt, disabled: arbeidsongeschikt}));
 ```
 
 ```js
-const franchise = view(Inputs.range([0, 25000], {label: "Franchise pensioen (€)", value: 17545, step: 100}));
+const franchise = view(Inputs.range([0, 25000], {label: "Franchise pensioen (€)", value: 17545, step: 100, disabled: arbeidsongeschikt}));
 ```
+
+<p class="muted small">Een uitkering kent geen werkgever en geen pensioenopbouw, dus deze velden vervallen dan.</p>
 
   </div>
 </div>
@@ -134,7 +140,7 @@ const kovUurprijs = view(Inputs.range([0, 15], {label: "Werkelijke uurprijs (€
 const kinderen = Array.from({length: aantalKinderen}, () => jongsteKindOnder12 ? 8 : 13);
 
 const baseInput = {
-  bruto, aow, expat,
+  bruto, aow, expat, arbeidsongeschikt,
   partner, partnerInkomen, partnerAOW,
   jongsteKindOnder12, huurMaand, kinderen,
   flex, grootWerkgever, whk,
@@ -155,9 +161,9 @@ const here = nearestRow(rows, bruto);
     <span class="muted small">van iedere extra € bruto loon gaat <em>niet</em> naar jou</span>
   </div>
   <div class="card big">
-    <h2>Op werkgeverskost</h2>
-    <span class="value">${fmtPct(md.drukOpWerkgever)}</span>
-    <span class="muted small">van iedere extra € werkgeverskost komt niet bij jou aan</span>
+    <h2>${arbeidsongeschikt ? "Gemiddelde druk" : "Op werkgeverskost"}</h2>
+    <span class="value">${arbeidsongeschikt ? fmtPct(1 - sce.besteedbaar / sce.bruto) : fmtPct(md.drukOpWerkgever)}</span>
+    <span class="muted small">${arbeidsongeschikt ? html`van je bruto uitkering blijft <em>niet</em> besteedbaar over` : "van iedere extra € werkgeverskost komt niet bij jou aan"}</span>
   </div>
   <div class="card big">
     <h2>Besteedbaar / jaar</h2>
@@ -165,9 +171,9 @@ const here = nearestRow(rows, bruto);
     <span class="muted small">netto + alle toeslagen</span>
   </div>
   <div class="card big">
-    <h2>Kost werkgever / jaar</h2>
-    <span class="value">${fmtEur(sce.totaalKostenWerkgever)}</span>
-    <span class="muted small">incl. premies, pensioen, vakantiegeld</span>
+    <h2>${arbeidsongeschikt ? "Bruto uitkering / jaar" : "Kost werkgever / jaar"}</h2>
+    <span class="value">${arbeidsongeschikt ? fmtEur(sce.bruto) : fmtEur(sce.totaalKostenWerkgever)}</span>
+    <span class="muted small">${arbeidsongeschikt ? "WIA/WAO vóór belasting" : "incl. premies, pensioen, vakantiegeld"}</span>
   </div>
 </div>
 
@@ -181,11 +187,74 @@ const here = nearestRow(rows, bruto);
 
 <div class="grid grid-cols-1">
   <div class="card chart">
-    <h2>De wig bij ${fmtEur(bruto)} jaarbruto</h2>
-    <p class="muted small">Eén balk: van wat de werkgever totaal kwijt is tot wat jij overhoudt. <em>Toeslagen</em> staan links van nul (ze tellen op bij je besteedbaar inkomen).</p>
+    <h2>De wig bij ${fmtEur(bruto)} ${arbeidsongeschikt ? "bruto uitkering" : "jaarbruto"}</h2>
+    <p class="muted small">${arbeidsongeschikt ? html`Eén balk: van de bruto uitkering tot wat jij overhoudt. Er is geen werkgever, dus de wig bestaat alleen uit belasting (minus toeslagen).` : html`Eén balk: van wat de werkgever totaal kwijt is tot wat jij overhoudt. <em>Toeslagen</em> staan links van nul (ze tellen op bij je besteedbaar inkomen).`}</p>
     ${resize((width) => wigBar({width, segments: wig}))}
   </div>
 </div>
+
+<div class="grid grid-cols-1">
+  <div class="card">
+    <h2>Opbouw van je besteedbaar inkomen</h2>
+    <p class="muted small">Van bruto ${arbeidsongeschikt ? "uitkering" : "loon"} naar wat je écht overhoudt, regel voor regel. Elke regel telt op (+) of gaat eraf (−); de vetgedrukte regels zijn tussentotalen met hun formule.</p>
+    ${opbouwTabel(sce)}
+  </div>
+</div>
+
+```js
+// Bouwt de opbouwtabel als een rij-gelabelde optelsom: ieder bedrag krijgt
+// een letter (a, b, c, …) en elk tussentotaal toont zijn formule, net als in
+// officiële inkomenstabellen. Optionele posten (pensioen, studielening,
+// kinderopvang) verschijnen alleen als ze van toepassing zijn.
+function opbouwTabel(sce) {
+  let i = 0;
+  const letter = () => String.fromCharCode(97 + i++);
+  const rows = [];
+  let parts = [];        // posten sinds het vorige tussentotaal {ref, sign}
+  let carried = null;    // het vorige tussentotaal dat doortelt
+
+  const post = (label, amount, sign) => {
+    const ref = letter();
+    rows.push({type: "post", ref, label, amount: sign * amount});
+    parts.push({ref, sign});
+  };
+  const totaal = (label, amount) => {
+    const ref = letter();
+    const seq = (carried ? [{ref: carried, sign: 1}] : []).concat(parts);
+    const formula = seq
+      .map((p, idx) =>
+        idx === 0
+          ? (p.sign < 0 ? `− ${p.ref}` : p.ref)
+          : (p.sign < 0 ? ` − ${p.ref}` : ` + ${p.ref}`))
+      .join("");
+    rows.push({type: "totaal", ref, label, amount, formula: `${ref} = ${formula}`});
+    carried = ref;
+    parts = [];
+  };
+
+  post(sce.arbeidsongeschikt ? "Bruto uitkering" : "Bruto loon", sce.bruto, +1);
+  if (sce.eigenPensioen > 0.5) post("Pensioenpremie werknemer", sce.eigenPensioen, -1);
+  post("Inkomstenbelasting (na heffingskortingen)", sce.ibNetto, -1);
+  totaal("Nettoloon", sce.netto);
+  if (sce.studielening > 0.5) post("Aflossing studielening", sce.studielening, -1);
+  post("Zorgtoeslag", sce.zorgtoeslag, +1);
+  post("Huurtoeslag", sce.huurtoeslag, +1);
+  post("Kindgebonden budget", sce.kindgebondenBudget, +1);
+  post("Kinderopvangtoeslag", sce.kinderopvangtoeslag, +1);
+  totaal("Besteedbaar inkomen", sce.besteedbaar);
+
+  return html`<table class="opbouw">
+    <thead><tr><th class="ref"></th><th>Post</th><th class="bedrag">Bedrag per jaar</th></tr></thead>
+    <tbody>
+      ${rows.map(r => html`<tr class=${r.type === "totaal" ? "emph" : ""}>
+        <td class="ref">${r.type === "totaal" ? html`<span class="formula">${r.formula}</span>` : r.ref}</td>
+        <td class="post">${r.label}</td>
+        <td class="bedrag ${r.amount < 0 ? "min" : ""}">${fmtEur(r.amount)}</td>
+      </tr>`)}
+    </tbody>
+  </table>`;
+}
+```
 
 <div class="grid grid-cols-2">
   <div class="card">
@@ -199,18 +268,8 @@ const here = nearestRow(rows, bruto);
     </table>
   </div>
   <div class="card">
-    <h2>Alle bedragen op jaarbasis</h2>
+    <h2>Belastbaar inkomen & werkgeverslasten</h2>
     <table class="kv">
-      <tr><th>Bruto</th><td>${fmtEur(sce.bruto)}</td></tr>
-      <tr><th>− Pensioen werknemer</th><td>${fmtEur(-sce.eigenPensioen)}</td></tr>
-      <tr><th>− Inkomstenbelasting netto</th><td>${fmtEur(-sce.ibNetto)}</td></tr>
-      <tr><th>= Nettoloon</th><td>${fmtEur(sce.netto)}</td></tr>
-      ${sce.studielening > 0 ? html`<tr><th>− Studielening</th><td>${fmtEur(-sce.studielening)}</td></tr>` : ""}
-      <tr><th>+ Zorgtoeslag</th><td>${fmtEur(sce.zorgtoeslag)}</td></tr>
-      <tr><th>+ Huurtoeslag</th><td>${fmtEur(sce.huurtoeslag)}</td></tr>
-      <tr><th>+ Kindgebonden budget</th><td>${fmtEur(sce.kindgebondenBudget)}</td></tr>
-      <tr><th>+ Kinderopvangtoeslag</th><td>${fmtEur(sce.kinderopvangtoeslag)}</td></tr>
-      <tr class="emph"><th>= Besteedbaar</th><td>${fmtEur(sce.besteedbaar)}</td></tr>
       <tr><th colspan="2" class="section">Belastbaar inkomen</th></tr>
       <tr><th>Belastbaar loon</th><td>${fmtEur(sce.belastbaar)}</td></tr>
       ${sce.expat30 > 0 ? html`<tr><th>30%-regeling onbelast</th><td>${fmtEur(sce.expat30)}</td></tr>` : ""}
@@ -221,15 +280,16 @@ const here = nearestRow(rows, bruto);
         <tr><th>Partner IB netto</th><td>${fmtEur(sce.partner.ibNetto)}</td></tr>
         <tr><th>Partner netto</th><td>${fmtEur(sce.partner.netto)}</td></tr>
         <tr><th>Huishoudverzamelinkomen</th><td>${fmtEur(sce.huishoudInkomen)}</td></tr>` : ""}
-      <tr><th colspan="2" class="section">Werkgeverslasten</th></tr>
-      <tr><th>Vakantiegeld</th><td>${fmtEur(sce.werkgever.vakantiegeld)}</td></tr>
-      <tr><th>WW (${flex ? "hoog" : "laag"})</th><td>${fmtEur(sce.werkgever.ww)}</td></tr>
-      <tr><th>Aof + opslag KO</th><td>${fmtEur(sce.werkgever.aof + sce.werkgever.aofKO)}</td></tr>
-      <tr><th>WHK</th><td>${fmtEur(sce.werkgever.whk)}</td></tr>
-      <tr><th>Werkgeversheffing Zvw</th><td>${fmtEur(sce.werkgever.zvw)}</td></tr>
-      <tr><th>Pensioen werkgever</th><td>${fmtEur(sce.werkgever.pensioen)}</td></tr>
-      <tr class="emph"><th>Totaal werkgever</th><td>${fmtEur(sce.totaalKostenWerkgever)}</td></tr>
-      <tr class="emph"><th>Belastingwig</th><td>${fmtEur(sce.wig)} <span class="muted">(${fmtPct(sce.wigPct)})</span></td></tr>
+      ${sce.arbeidsongeschikt ? html`<tr><th colspan="2" class="section">Werkgeverslasten</th></tr>
+        <tr><td colspan="2" class="muted small" style="text-align:left">Een uitkering kent geen werkgever, dus geen werkgeverslasten of belastingwig op werkgeverskost.</td></tr>` : html`<tr><th colspan="2" class="section">Werkgeverslasten</th></tr>
+        <tr><th>Vakantiegeld</th><td>${fmtEur(sce.werkgever.vakantiegeld)}</td></tr>
+        <tr><th>WW (${flex ? "hoog" : "laag"})</th><td>${fmtEur(sce.werkgever.ww)}</td></tr>
+        <tr><th>Aof + opslag KO</th><td>${fmtEur(sce.werkgever.aof + sce.werkgever.aofKO)}</td></tr>
+        <tr><th>WHK</th><td>${fmtEur(sce.werkgever.whk)}</td></tr>
+        <tr><th>Werkgeversheffing Zvw</th><td>${fmtEur(sce.werkgever.zvw)}</td></tr>
+        <tr><th>Pensioen werkgever</th><td>${fmtEur(sce.werkgever.pensioen)}</td></tr>
+        <tr class="emph"><th>Totaal werkgever</th><td>${fmtEur(sce.totaalKostenWerkgever)}</td></tr>
+        <tr class="emph"><th>Belastingwig</th><td>${fmtEur(sce.wig)} <span class="muted">(${fmtPct(sce.wigPct)})</span></td></tr>`}
     </table>
   </div>
 </div>

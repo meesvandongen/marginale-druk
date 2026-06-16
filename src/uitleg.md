@@ -86,6 +86,7 @@ Onderstaande tabel laat zien hoe de combinatie van afbouwen voor een alleenstaan
 - Studieleningterugbetaling (stelsel SF2015 / SF2024 of stelsel vóór 2015)
 - Toeslagpartner als <em>volledig</em> tweede scenario: eigen schijven, eigen heffingskortingen — verzamelinkomens worden opgeteld voor toeslagentoetsing
 - Vergelijking AOW vs. niet-AOW (per persoon instelbaar)
+- <strong>Arbeidsongeschiktheidsuitkering (WIA/WAO)</strong>: een uitkering is geen arbeidsinkomen, dus géén arbeidskorting en géén IACK, geen pensioenopbouw en geen werkgeverslasten. Box 1 en de toeslagen werken wél gewoon.
 - Marginale druk in beide richtingen: bruto en werkgeverskost
   </div>
   <div class="card">
