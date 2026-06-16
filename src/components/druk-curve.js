@@ -5,7 +5,7 @@ import {fmtEur, fmtEurK, fmtPct} from "../lib/format.js";
 // Stacked-area visualisation of where each extra euro of bruto goes.
 // Negative values (credits in their build-up phase) push the stack below
 // the zero baseline, which is how a marginal druk < 0% looks.
-export function drukCurve({width, rows, long, currentBruto, height = 460} = {}) {
+export function drukCurve({width, rows, long, currentBruto, currentMarginaal, height = 460} = {}) {
   // Tight, predictable domain. Negative band ≈ −20% covers the IACK/AK
   // build-up zone; positive band reaches a touch over 100% so the red
   // reference line stays inside the plot.
@@ -64,7 +64,7 @@ export function drukCurve({width, rows, long, currentBruto, height = 460} = {}) 
         strokeOpacity: 0.9
       }),
       Plot.ruleX([currentBruto], {stroke: "currentColor", strokeWidth: 1.2, strokeOpacity: 0.6}),
-      Plot.dot(rows.filter(r => r.bruto === snap(currentBruto, rows)), {
+      Plot.dot([{bruto: currentBruto, marginaal: currentMarginaal ?? snapMarginaal(currentBruto, rows)}], {
         x: "bruto", y: "marginaal", r: 5, fill: "currentColor", stroke: "white", strokeWidth: 2
       }),
       Plot.ruleX(rows, Plot.pointerX({
@@ -82,10 +82,11 @@ export function drukCurve({width, rows, long, currentBruto, height = 460} = {}) 
   });
 }
 
-function snap(bruto, rows) {
-  if (!rows.length) return bruto;
-  const step = rows.length > 1 ? rows[1].bruto - rows[0].bruto : 1;
-  return Math.round(bruto / step) * step;
+function snapMarginaal(bruto, rows) {
+  if (!rows.length) return 0;
+  let best = rows[0];
+  for (const r of rows) if (Math.abs(r.bruto - bruto) < Math.abs(best.bruto - bruto)) best = r;
+  return best.marginaal;
 }
 
 function tipText(r) {

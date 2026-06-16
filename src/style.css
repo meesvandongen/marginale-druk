@@ -128,6 +128,92 @@ table.kv th.section {
 }
 table.kv td.neg { color: #16a34a; }
 
+/* ---------- Interactive build-up table (input + result in one) ---------- */
+table.opbouw {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+table.opbouw th,
+table.opbouw td {
+  padding: .7rem .25rem;
+  border-bottom: 1px solid var(--theme-foreground-faintest);
+  text-align: left;
+  font-weight: 400;
+}
+table.opbouw th.post {
+  color: var(--theme-foreground);
+  font-weight: 400;
+}
+table.opbouw td.bedrag {
+  text-align: right;
+  white-space: nowrap;
+  font-feature-settings: "tnum";
+}
+table.opbouw td.bedrag .op {
+  display: inline-block;
+  width: 1em;
+  margin-right: .15em;
+  color: var(--theme-foreground-muted);
+  text-align: center;
+}
+/* Subtotals: a stronger top border and bold type set them apart. */
+table.opbouw tr.subtotal th,
+table.opbouw tr.subtotal td {
+  font-weight: 700;
+  border-top: 1.5px solid var(--theme-foreground-faint, rgba(15, 23, 42, .2));
+  border-bottom: none;
+}
+/* The final row (besteedbaar) is the headline result. */
+table.opbouw tr:last-child th,
+table.opbouw tr:last-child td {
+  font-size: 1.1rem;
+  color: var(--md-accent);
+  border-bottom: none;
+}
+
+/* Editable income row */
+table.opbouw tr.bruto-row th.post { font-weight: 600; }
+table.opbouw tr.bruto-row td { padding-top: .4rem; padding-bottom: .8rem; }
+.euro-field {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  justify-content: flex-end;
+  border: 1.5px solid var(--theme-foreground-faintest);
+  border-radius: 10px;
+  padding: .45rem .7rem;
+  background: var(--theme-background);
+  cursor: text;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  max-width: 100%;
+}
+.euro-field:focus-within {
+  border-color: var(--md-accent);
+  box-shadow: 0 0 0 3px var(--md-accent-soft);
+}
+.euro-field .euro-sign {
+  color: var(--theme-foreground-muted);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.bruto-input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  /* >=16px keeps iOS Safari from zooming on focus */
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 8ch;
+  max-width: 46vw;
+  color: var(--theme-foreground);
+  padding: 0;
+}
+
 /* ---------- Plot tweaks ---------- */
 figure { margin: 0; }
 figure svg { display: block; }
@@ -148,10 +234,23 @@ figure[class*="plot-"] { background: transparent; }
   color: var(--theme-foreground-muted);
 }
 
-/* ---------- Responsive ---------- */
+/* ---------- Responsive (mobile-first) ---------- */
 @media (max-width: 900px) {
   .grid.grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
   .grid.grid-cols-3 { grid-template-columns: 1fr; }
   .grid.grid-cols-2 { grid-template-columns: 1fr; }
   .hero { padding: 1.25rem; }
 }
+@media (max-width: 540px) {
+  .grid.grid-cols-4 { grid-template-columns: 1fr; }
+  .card { padding: .9rem 1rem; }
+  /* Bigger tap targets and readable rows on phones. */
+  table.opbouw th,
+  table.opbouw td { padding: .85rem .15rem; }
+  .euro-field { padding: .55rem .8rem; flex: 1; }
+  .bruto-input { font-size: 1.25rem; max-width: none; flex: 1; }
+  table.opbouw tr.bruto-row td { width: 55%; }
+  .card.big { padding: .85rem 1rem; }
+}
+/* Comfortable hit area for range/checkbox inputs inside cards. */
+.card form[class*="oi-"] input[type="range"] { height: 1.6rem; }

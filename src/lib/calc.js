@@ -211,24 +211,32 @@ function persoonScenario({
   bruto,
   aow = false,
   expat = false,
+  arbeidsongeschikt = false,
   pensioenWerknemerPct = 0,
   franchise = 0,
   jongsteKindOnder12 = false,
   hypoRente = 0,
   woz = 0
 }) {
+  // Een arbeidsongeschiktheidsuitkering (WIA/WAO) is geen arbeidsinkomen:
+  // er wordt geen pensioen via een werkgever opgebouwd en de 30%-regeling
+  // geldt niet.
   const grondslagPensioen = Math.max(0, bruto - franchise);
-  const eigenPensioen = pensioenWerknemerPct * grondslagPensioen;
-  const expat30 = expatVrij(bruto, { expat });
+  const eigenPensioen = arbeidsongeschikt ? 0 : pensioenWerknemerPct * grondslagPensioen;
+  const expat30 = arbeidsongeschikt ? 0 : expatVrij(bruto, { expat });
   const belastbaarLoon = Math.max(0, bruto - eigenPensioen - expat30);
 
   const ewSaldo = eigenWoningSaldo({ hypoRente, woz });
   const verzamelinkomen = Math.max(0, belastbaarLoon + ewSaldo);
 
+  // Arbeidskorting en IACK gelden uitsluitend over arbeidsinkomen. Een
+  // uitkering telt daarvoor niet mee, dus is het arbeidsinkomen dan nul —
+  // fiscaal de grootste oorzaak van het verschil in marginale druk.
+  const arbeidsinkomen = arbeidsongeschikt ? 0 : belastbaarLoon;
   const ib = box1MetEigenWoning(belastbaarLoon, ewSaldo, { aow });
   const ahk = algemeneHeffingskorting(verzamelinkomen, { aow });
-  const ak = arbeidskorting(belastbaarLoon, { aow });
-  const ic = iack(belastbaarLoon, { jongsteKindOnder12 });
+  const ak = arbeidskorting(arbeidsinkomen, { aow });
+  const ic = iack(arbeidsinkomen, { jongsteKindOnder12 });
   const ibNetto = Math.max(0, ib - ahk - ak - ic);
 
   const netto = bruto - eigenPensioen - ibNetto;
@@ -246,6 +254,7 @@ export function scenario(input) {
     bruto,
     aow = false,
     expat = false,
+    arbeidsongeschikt = false,
     partner = false,
     partnerInkomen = 0,
     partnerAOW = false,
@@ -268,7 +277,7 @@ export function scenario(input) {
   } = input;
 
   const me = persoonScenario({
-    bruto, aow, expat,
+    bruto, aow, expat, arbeidsongeschikt,
     pensioenWerknemerPct, franchise,
     jongsteKindOnder12,
     hypoRente, woz
@@ -301,15 +310,19 @@ export function scenario(input) {
 
   const eigenBesteedbaar = me.netto - studielast + zt + ht + kgb + kot;
 
-  const wgl = werkgeverslasten(bruto, {
-    flex, grootWerkgever, whk,
-    pensioenWerkgeverPct, franchise,
-    vakantiegeldOpgeteld: !vakantiegeldInBruto
-  });
+  // Bij een uitkering is er geen werkgever, dus geen werkgeverslasten.
+  const wgl = arbeidsongeschikt
+    ? { ww: 0, aof: 0, aofKO: 0, whk: 0, zvw: 0, pensioen: 0, vakantiegeld: 0, totaal: 0 }
+    : werkgeverslasten(bruto, {
+        flex, grootWerkgever, whk,
+        pensioenWerkgeverPct, franchise,
+        vakantiegeldOpgeteld: !vakantiegeldInBruto
+      });
   const totaalKostenWerkgever = bruto + wgl.totaal;
 
   return {
     bruto,
+    arbeidsongeschikt,
     eigenPensioen: me.eigenPensioen,
     expat30: me.expat30,
     belastbaar: me.belastbaarLoon,
