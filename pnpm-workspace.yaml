@@ -1,0 +1,6 @@
+# Dependency install scripts pnpm may run.
+allowBuilds:
+  esbuild: true
+  workerd: true
+  # sharp (via wrangler) ships prebuilt binaries; its script only builds from source.
+  sharp: false

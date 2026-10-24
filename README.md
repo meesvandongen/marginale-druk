@@ -17,9 +17,12 @@ pensioenpremies. De calculator laat zien:
 
 ## Lokaal draaien
 
+Vereist Node 24 en pnpm (vastgezet in `package.json` via corepack; pnpm 12 heeft
+corepack 0.36+ nodig: `npm install -g corepack@latest && corepack enable`).
+
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Bezoek vervolgens http://localhost:3000.
@@ -27,7 +30,7 @@ Bezoek vervolgens http://localhost:3000.
 ## Bouwen
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 De output verschijnt in `./dist` en is volledig statisch.
@@ -35,9 +38,9 @@ De output verschijnt in `./dist` en is volledig statisch.
 ## Deployen naar Cloudflare Workers
 
 ```bash
-npm run build
-npx wrangler login        # eenmalig
-npx wrangler deploy
+pnpm run build
+pnpm exec wrangler login  # eenmalig
+pnpm exec wrangler deploy
 ```
 
 `wrangler.toml` configureert de Workers static-assets-binding op `./dist`.
