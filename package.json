@@ -17,7 +17,7 @@
     "d3": "^7.9.0"
   },
   "devDependencies": {
-    "rimraf": "^5.0.5",
+    "rimraf": "^6.0.0",
     "wrangler": "^3.90.0"
   },
   "engines": {
